@@ -32,7 +32,7 @@ export async function joinTrip(formData: FormData) {
       trip_id: tripId,
       user_id: user.id,
       role: 'member',
-      status: 'accepted',
+      status: 'pending',
       joined_at: new Date().toISOString(),
       invited_by: null // Joined via code
     })

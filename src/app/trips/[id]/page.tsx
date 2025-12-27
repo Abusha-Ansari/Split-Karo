@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import InviteCard from '@/components/invite-card'
+import MemberManagement from '@/components/member-management'
+import InviteModal from '@/components/invite-modal'
 
 export default async function TripDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -13,12 +15,10 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
 
     if (!user) redirect('/login')
 
-
-
-    // Fetch Trip
+    // Fetch Trip Metadata (Allowed for Pending/invited due to new RLS)
     const { data: trip, error } = await supabase
         .from('trips')
-        .select('*, trip_members(*, profiles:profiles!trip_members_user_id_fkey(*))')
+        .select('*')
         .eq('id', id)
         .single()
 
@@ -26,6 +26,68 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
         console.error('Trip Load Error:', error)
         return <div className="p-4 text-red-500">Error loading trip. Please try again.</div>
     }
+
+    // Fetch Current Member Status
+    const { data: currentMember } = await supabase
+        .from('trip_members')
+        .select('role, status')
+        .eq('trip_id', id)
+        .eq('user_id', user.id)
+        .single()
+
+    // Handle Pending/Invited States
+    if (currentMember?.status === 'pending') {
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center p-4">
+                <div className="glass-card max-w-md w-full text-center p-8 space-y-6">
+                    <div className="w-16 h-16 bg-amber-500/20 text-amber-300 rounded-full flex items-center justify-center mx-auto">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-white">Request Sent</h1>
+                    <p className="text-slate-300">
+                        Your request to join <span className="text-brand-200 font-bold">{trip.name}</span> has been sent.
+                        Please wait for the trip leader to approve it.
+                    </p>
+                    <Link href="/dashboard" className="btn-secondary inline-block">Back to Dashboard</Link>
+                </div>
+            </div>
+        )
+    }
+
+    if (currentMember?.status === 'invited') {
+        // Auto-accept? Or show accept button.
+        // For now, let's just show a simple "You have been invited" screen similar to pending.
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center p-4">
+                <div className="glass-card max-w-md w-full text-center p-8 space-y-6">
+                    <div className="w-16 h-16 bg-brand-500/20 text-brand-300 rounded-full flex items-center justify-center mx-auto">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-white">You're Invited!</h1>
+                    <p className="text-slate-300">
+                        You have been invited to join <span className="text-brand-200 font-bold">{trip.name}</span>.
+                    </p>
+                    <form action={async () => {
+                        'use server'
+                        const supabase = await createClient()
+                        await supabase.from('trip_members').update({ status: 'accepted', joined_at: new Date().toISOString() }).eq('trip_id', id).eq('user_id', user.id)
+                        redirect(`/trips/${id}`)
+                    }}>
+                        <button className="btn-primary w-full">Accept Invitation</button>
+                    </form>
+                    <Link href="/dashboard" className="btn-secondary inline-block mt-4">Cancel</Link>
+                </div>
+            </div>
+        )
+    }
+
+    // --- Active Member View ---
+
+    // Fetch Trip Members (for management)
+    const { data: members } = await supabase
+        .from('trip_members')
+        .select('*, profiles:profiles!trip_members_user_id_fkey(*)')
+        .eq('trip_id', id)
 
     // Fetch Expenses
     const { data: expenses } = await supabase
@@ -41,6 +103,8 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
         `)
         .eq('trip_id', id)
         .order('date', { ascending: false })
+
+    const isLeader = currentMember?.role === 'leader' || trip.leader_id === user.id
 
     return (
         <div className="container mx-auto p-4 py-8">
@@ -133,30 +197,16 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                 {/* Sidebar (Invite & Members) */}
                 <div className="space-y-6">
                     {/* Invite Card */}
-                    {/* Invite Card */}
                     <InviteCard inviteCode={trip.invite_code} />
 
-                    {/* Members Card */}
-                    <div className="glass-card">
-                        <h2 className="text-lg font-semibold text-white mb-4">Members</h2>
-                        <ul className="space-y-3">
-                            {trip.trip_members?.map((member: any) => (
-                                <li key={member.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white border border-white/10">
-                                            {(member.profiles?.display_name || member.profiles?.email || 'U')[0].toUpperCase()}
-                                        </div>
-                                        <span className="font-medium text-slate-200 text-sm">
-                                            {member.profiles?.display_name || member.profiles?.email || 'Unknown User'}
-                                        </span>
-                                    </div>
-                                    <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold ${member.role === 'leader' ? 'bg-brand-500/20 text-brand-300 border border-brand-500/20' : 'bg-slate-700/50 text-slate-400'}`}>
-                                        {member.role}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {/* Member Management */}
+                    <MemberManagement
+                        tripId={id}
+                        members={members || []}
+                        isAdmin={isLeader}
+                    />
+
+                    {isLeader && <InviteModal tripId={id} />}
                 </div>
             </div>
         </div>
