@@ -37,7 +37,7 @@ export default async function Home() {
             Login
           </Link>
           <Link href="/signup" className="btn-primary w-full sm:w-auto px-8">
-            Get Started
+            Sign Up
           </Link>
         </div>
       </div>

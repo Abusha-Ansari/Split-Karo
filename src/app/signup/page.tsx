@@ -1,4 +1,5 @@
 import { signup } from '../login/actions'
+import VerificationModal from './verification-modal'
 
 export default async function SignupPage({
     searchParams,
@@ -23,11 +24,7 @@ export default async function SignupPage({
                             <span className="block sm:inline">{error}</span>
                         </div>
                     )}
-                    {message && (
-                        <div className="mb-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 px-4 py-3 rounded-xl relative" role="alert">
-                            <span className="block sm:inline">{message}</span>
-                        </div>
-                    )}
+                    <VerificationModal message={message} />
                     <form className="space-y-6">
                         <div>
                             <label htmlFor="display_name" className="block text-sm font-medium text-slate-200">
@@ -87,6 +84,6 @@ export default async function SignupPage({
                     </form>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

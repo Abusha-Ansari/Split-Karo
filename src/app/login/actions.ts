@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
 
+import { createAdminClient } from '@/utils/supabase/admin'
+
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
@@ -42,10 +44,20 @@ export async function signup(formData: FormData) {
     }
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { data: authData, error } = await supabase.auth.signUp(data)
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`)
+  }
+
+  if (authData.user) {
+    const adminSupabase = createAdminClient()
+    await adminSupabase.from('profiles').upsert({
+        id: authData.user.id,
+        email: authData.user.email,
+        display_name: displayName,
+        username: authData.user.user_metadata?.username || authData.user.email?.split('@')[0],
+    }, { onConflict: 'id' })
   }
 
   revalidatePath('/', 'layout')
