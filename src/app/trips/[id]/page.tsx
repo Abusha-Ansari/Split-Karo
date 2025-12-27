@@ -29,7 +29,15 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
     // Fetch Expenses
     const { data: expenses } = await supabase
         .from('expenses')
-        .select('*, profiles:profiles!expenses_payer_id_fkey(display_name, email)')
+        .select(`
+            *, 
+            profiles:profiles!expenses_payer_id_fkey(display_name, email),
+            expense_splits(
+                user_id,
+                share_amount,
+                profiles:profiles!expense_splits_user_id_fkey(display_name)
+            )
+        `)
         .eq('trip_id', id)
         .order('date', { ascending: false })
 
@@ -79,14 +87,25 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                                         </div>
                                         <div>
                                             <p className="font-bold text-white text-lg">{expense.description}</p>
-                                            <div className="flex items-center gap-2 text-sm">
-                                                <span className="text-brand-200">
-                                                    {expense.profiles?.display_name || expense.profiles?.email || 'Unknown'}
-                                                </span>
-                                                <span className="text-white/20">•</span>
-                                                <span className="text-slate-400">
-                                                    {new Date(expense.date).toLocaleDateString()}
-                                                </span>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <span className="text-brand-200">
+                                                        {expense.profiles?.display_name || expense.profiles?.email || 'Unknown'}
+                                                    </span>
+                                                    <span className="text-white/20">•</span>
+                                                    <span className="text-slate-400">
+                                                        {new Date(expense.date).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <div className="text-xs text-slate-400 italic">
+                                                    {expense.split_type === 'equal_all' && 'Split with everyone'}
+                                                    {expense.split_type === 'equal_selected' && (
+                                                        <span>
+                                                            Split with {expense.expense_splits?.length} people: {' '}
+                                                            {expense.expense_splits?.map((s: any) => s.profiles?.display_name || 'User').join(', ')}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

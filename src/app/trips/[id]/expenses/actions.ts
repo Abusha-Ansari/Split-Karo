@@ -17,9 +17,10 @@ export async function addExpense(tripId: string, formData: FormData) {
   const amount = parseFloat(formData.get('amount') as string)
   const payerId = formData.get('payer_id') as string
   const date = formData.get('date') as string
-  const splitType = 'equal_all' // Simplified for MVP first iteration, hardcoded or form field
+  const splitType = (formData.get('split_type') as string) || 'equal_all'
+  const selectedUserIds = new Set(formData.getAll('selected_users') as string[])
 
-  // Fetch members to calculate splits (if equal)
+  // Fetch members to verify and calculate splits
   const { data: members } = await supabase
     .from('trip_members')
     .select('user_id')
@@ -29,9 +30,18 @@ export async function addExpense(tripId: string, formData: FormData) {
       return { error: 'No members to split with' }
   }
 
-  const splitAmount = amount / members.length
+  let splitMembers = members
+  if (splitType === 'equal_selected') {
+      splitMembers = members.filter(m => selectedUserIds.has(m.user_id))
+      // Fallback if none selected (should be prevented by UI but good for safety)
+      if (splitMembers.length === 0) {
+          splitMembers = members
+      }
+  }
+
+  const splitAmount = amount / splitMembers.length
   
-  const splits = members.map(m => ({
+  const splits = splitMembers.map(m => ({
       user_id: m.user_id,
       share_amount: splitAmount
   }))
