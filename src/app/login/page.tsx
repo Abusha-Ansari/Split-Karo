@@ -1,4 +1,5 @@
-import { login, signup } from './actions'
+import { login } from './actions'
+import Link from 'next/link'
 
 export default async function LoginPage({
     searchParams,
@@ -68,12 +69,12 @@ export default async function LoginPage({
                             >
                                 Sign in
                             </button>
-                            <button
-                                formAction={signup}
+                            <Link
+                                href="/signup"
                                 className="btn-secondary w-full"
                             >
                                 Create an account
-                            </button>
+                            </Link>
                         </div>
                     </form>
                 </div>
