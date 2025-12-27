@@ -14,14 +14,12 @@ export async function joinTrip(formData: FormData) {
 
   if (!user) redirect('/login?next=/join')
 
-  // Find trip
-  const { data: trip, error } = await supabase
-    .from('trips')
-    .select('id')
-    .eq('invite_code', code)
-    .single()
+  // Find trip using RPC to bypass RLS
+  const { data: tripId, error } = await supabase.rpc('get_trip_id_by_invite_code', {
+    invite_code_input: code
+  })
 
-  if (error || !trip) {
+  if (error || !tripId) {
     // Return error state ideally, for now just redirect or log
     console.error('Join error:', error)
     redirect('/join?error=Invalid invite code')
@@ -31,7 +29,7 @@ export async function joinTrip(formData: FormData) {
   const { error: memberError } = await supabase
     .from('trip_members')
     .insert({
-      trip_id: trip.id,
+      trip_id: tripId,
       user_id: user.id,
       role: 'member',
       status: 'accepted',
@@ -42,12 +40,12 @@ export async function joinTrip(formData: FormData) {
   if (memberError) {
       // Check if already member
       if (memberError.code === '23505') { // Unique violation
-          redirect(`/trips/${trip.id}`)
+          redirect(`/trips/${tripId}`)
       }
       console.error('Member add error:', memberError)
       redirect('/join?error=Failed to join trip')
   }
 
   revalidatePath('/dashboard')
-  redirect(`/trips/${trip.id}`)
+  redirect(`/trips/${tripId}`)
 }

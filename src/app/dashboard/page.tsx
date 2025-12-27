@@ -19,30 +19,43 @@ export default async function DashboardPage() {
         .order('created_at', { ascending: false })
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Your Trips</h1>
-                <Link href="/trips/new" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+        <div className="container mx-auto p-4 py-8">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-white tracking-tight drop-shadow-md">Your Trips</h1>
+                <Link href="/trips/new" className="btn-primary">
                     Create Trip
                 </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {trips?.map((trip) => (
-                    <Link key={trip.id} href={`/trips/${trip.id}`} className="block">
-                        <div className="border rounded-lg p-4 hover:shadow-lg transition">
-                            <h2 className="text-xl font-semibold">{trip.name}</h2>
-                            <p className="text-gray-600">{trip.description}</p>
-                            <div className="mt-4 flex justify-between text-sm text-gray-500">
-                                <span>{trip.currency}</span>
-                                <span>{new Date(trip.created_at).toLocaleDateString()}</span>
+                    <Link key={trip.id} href={`/trips/${trip.id}`} className="block group">
+                        <div className="glass-card h-full flex flex-col justify-between group-hover:bg-white/10">
+                            <div>
+                                <h2 className="text-xl font-bold text-white mb-2">{trip.name}</h2>
+                                <p className="text-brand-100 line-clamp-2">{trip.description}</p>
+                            </div>
+                            <div className="mt-6 flex justify-between items-end border-t border-white/10 pt-4">
+                                <span className="bg-brand-900/50 text-brand-200 text-xs px-2 py-1 rounded border border-brand-700/50 font-mono">
+                                    {trip.currency}
+                                </span>
+                                <span className="text-sm text-slate-300">
+                                    {new Date(trip.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
                             </div>
                         </div>
                     </Link>
                 ))}
-                {trips?.length === 0 && (
-                    <p className="col-span-full text-center text-gray-500">No trips found. Create one to get started!</p>
-                )}
+
+                <Link href="/trips/new" className="block group">
+                    <div className="glass h-full rounded-2xl border-dashed border-2 border-white/20 p-6 flex flex-col items-center justify-center text-center transition-all hover:border-brand-400 hover:bg-white/5 cursor-pointer min-h-[200px]">
+                        <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span className="text-2xl text-white">+</span>
+                        </div>
+                        <h3 className="text-lg font-medium text-white mb-1">Create New Trip</h3>
+                        <p className="text-sm text-slate-400">Start splitting expenses</p>
+                    </div>
+                </Link>
             </div>
         </div>
     )
