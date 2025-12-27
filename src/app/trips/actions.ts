@@ -68,6 +68,10 @@ export async function createTrip(formData: FormData) {
 
   if (memberError) {
       console.error('Error adding leader:', memberError)
+      // If we can't add the leader, the trip is in a bad state. 
+      // Ideally we rollback (transaction), but over HTTP we can't easily.
+      // Inform user.
+      redirect(`/trips/new?error=Trip created but failed to join as leader. Error: ${memberError.message}`)
   }
 
   redirect(`/trips/${data.id}`)

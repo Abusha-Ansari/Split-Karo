@@ -15,7 +15,7 @@ export default async function RecordSettlementPage({ params }: { params: Promise
     // Fetch members to pay TO
     const { data: members } = await supabase
         .from('trip_members')
-        .select('user_id, profiles(display_name, email)')
+        .select('user_id, profiles:profiles!trip_members_user_id_fkey(display_name, email)')
         .eq('trip_id', id)
         .neq('user_id', user.id) // Cannot pay yourself
 

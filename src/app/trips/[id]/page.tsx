@@ -12,21 +12,24 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
 
     if (!user) redirect('/login')
 
+
+
     // Fetch Trip
     const { data: trip, error } = await supabase
         .from('trips')
-        .select('*, trip_members(*, profiles(*))')
+        .select('*, trip_members(*, profiles:profiles!trip_members_user_id_fkey(*))')
         .eq('id', id)
         .single()
 
     if (error || !trip) {
-        return <div className="p-4 text-red-500">Trip not found or access denied</div>
+        console.error('Trip Load Error:', error)
+        return <div className="p-4 text-red-500">Error loading trip. Please try again.</div>
     }
 
     // Fetch Expenses
     const { data: expenses } = await supabase
         .from('expenses')
-        .select('*, profiles(display_name, email)')
+        .select('*, profiles:profiles!expenses_payer_id_fkey(display_name, email)')
         .eq('trip_id', id)
         .order('date', { ascending: false })
 

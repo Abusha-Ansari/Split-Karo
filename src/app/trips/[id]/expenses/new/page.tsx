@@ -15,7 +15,7 @@ export default async function AddExpensePage({ params }: { params: Promise<{ id:
     // Fetch trip members for Payer dropdown
     const { data: members, error } = await supabase
         .from('trip_members')
-        .select('user_id, profiles(id, display_name, email)')
+        .select('user_id, profiles:profiles!trip_members_user_id_fkey(id, display_name, email)')
         .eq('trip_id', id)
 
     if (error || !members) {
