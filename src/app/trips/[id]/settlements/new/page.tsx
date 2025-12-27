@@ -25,33 +25,51 @@ export default async function RecordSettlementPage({ params }: { params: Promise
         <div className="container mx-auto p-4 py-12">
             <div className="max-w-md mx-auto glass-card">
                 <h1 className="text-2xl font-bold mb-6 text-white text-center">Record Payment</h1>
-                <form action={recordSettlementWithId as any} className="space-y-4">
+                <form action={recordSettlementWithId as any} className="space-y-6">
                     <div>
-                        <label htmlFor="to_user_id" className="block text-sm font-medium text-slate-200">Paid To</label>
-                        <select name="to_user_id" id="to_user_id" required className="glass-input mt-1 w-full text-slate-900 appearance-none bg-white/50">
-                            {members?.map((m: any) => (
-                                <option key={m.user_id} value={m.user_id}>
-                                    {m.profiles?.display_name || m.profiles?.email || 'Unknown'}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label htmlFor="amount" className="block text-sm font-medium text-slate-200">Amount</label>
-                        <div className="relative mt-1">
-                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span className="text-gray-500 sm:text-sm">$</span>
+                        <label htmlFor="to_user_id" className="block text-sm font-medium text-slate-200 mb-1">Paid To</label>
+                        <div className="relative">
+                            <select
+                                name="to_user_id"
+                                id="to_user_id"
+                                required
+                                className="glass-input w-full appearance-none pr-10 cursor-pointer text-lg"
+                            >
+                                {members?.map((m: any) => (
+                                    <option key={m.user_id} className="bg-slate-900" value={m.user_id}>
+                                        {m.profiles?.display_name || m.profiles?.email || 'Unknown'}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
-                            <input type="number" step="0.01" name="amount" id="amount" required className="glass-input w-full text-slate-900 pl-7" placeholder="0.00" />
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary w-full mt-4">
+                    <div>
+                        <label htmlFor="amount" className="block text-sm font-medium text-slate-200 mb-1">Amount</label>
+                        <div className="relative">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                                <span className="text-gray-400 font-bold">$</span>
+                            </div>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="amount"
+                                id="amount"
+                                required
+                                className="glass-input w-full pl-8 text-lg font-mono font-medium"
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
+
+                    <button type="submit" className="btn-primary w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-xl shadow-emerald-500/20">
                         Record Payment
                     </button>
                     <div className="text-center mt-4">
-                        <a href={`/trips/${id}/settlements`} className="text-sm text-slate-300 hover:text-white hover:underline">Cancel</a>
+                        <a href={`/trips/${id}/settlements`} className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Cancel</a>
                     </div>
                 </form>
             </div>

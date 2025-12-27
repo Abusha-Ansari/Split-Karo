@@ -51,7 +51,7 @@ export default async function SettlementsPage({ params }: { params: Promise<{ id
                 </Link>
             </div>
 
-            <div className="glass-card overflow-hidden">
+            <div className="glass-card overflow-hidden overflow-x-auto">
                 <table className="min-w-full divide-y divide-white/10">
                     <thead className="bg-white/5">
                         <tr>

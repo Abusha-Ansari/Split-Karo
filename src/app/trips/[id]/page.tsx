@@ -80,24 +80,24 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                     {expenses && expenses.length > 0 ? (
                         <div className="space-y-3">
                             {expenses.map((expense: any) => (
-                                <div key={expense.id} className="glass-card p-4 flex justify-between items-center group hover:bg-white/10 cursor-default">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/20">
+                                <div key={expense.id} className="glass-card p-3 sm:p-4 flex items-start sm:items-center justify-between gap-3 group hover:bg-white/10 cursor-default transition-colors">
+                                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/20 text-sm sm:text-base">
                                             {expense.currency?.[0] || '$'}
                                         </div>
-                                        <div>
-                                            <p className="font-bold text-white text-lg">{expense.description}</p>
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2 text-sm">
-                                                    <span className="text-brand-200">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold text-white text-base sm:text-lg truncate leading-tight mb-0.5">{expense.description}</p>
+                                            <div className="flex flex-col gap-0.5">
+                                                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-slate-300">
+                                                    <span className="text-brand-200 font-medium truncate">
                                                         {expense.profiles?.display_name || expense.profiles?.email || 'Unknown'}
                                                     </span>
                                                     <span className="text-white/20">•</span>
-                                                    <span className="text-slate-400">
+                                                    <span>
                                                         {new Date(expense.date).toLocaleDateString()}
                                                     </span>
                                                 </div>
-                                                <div className="text-xs text-slate-400 italic">
+                                                <div className="text-[10px] sm:text-xs text-slate-400 italic truncate">
                                                     {expense.split_type === 'equal_all' && 'Split with everyone'}
                                                     {expense.split_type === 'equal_selected' && (
                                                         <span>
@@ -109,7 +109,7 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="font-bold text-xl text-white">
+                                    <div className="font-bold text-lg sm:text-xl text-white whitespace-nowrap flex-shrink-0 pl-2">
                                         {expense.currency} {expense.amount}
                                     </div>
                                 </div>

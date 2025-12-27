@@ -82,104 +82,157 @@ export default function ExpenseForm({ tripId, members, currentUserId }: ExpenseF
     // Explicitly using the wrapper:
 
     return (
-        <form action={handleSubmit} className="space-y-4">
-            <div>
-                <label htmlFor="description" className="block text-sm font-medium text-slate-200">Description</label>
-                <input type="text" name="description" id="description" required className="glass-input mt-1 w-full text-slate-900" placeholder="e.g. Dinner at Mario's" />
-            </div>
+        <form action={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+                <div>
+                    <label htmlFor="description" className="block text-sm font-medium text-slate-200 mb-1">Description</label>
+                    <input
+                        type="text"
+                        name="description"
+                        id="description"
+                        required
+                        className="glass-input w-full text-lg placeholder:text-slate-500/50"
+                        placeholder="What is this for?"
+                    />
+                </div>
 
-            <div>
-                <label htmlFor="amount" className="block text-sm font-medium text-slate-200">Amount</label>
-                <div className="relative mt-1">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span className="text-gray-500 sm:text-sm">$</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="amount" className="block text-sm font-medium text-slate-200 mb-1">Amount</label>
+                        <div className="relative">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                                <span className="text-gray-400 font-bold">$</span>
+                            </div>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="amount"
+                                id="amount"
+                                required
+                                className="glass-input w-full pl-8 text-lg font-mono font-medium"
+                                placeholder="0.00"
+                            />
+                        </div>
                     </div>
-                    <input type="number" step="0.01" name="amount" id="amount" required className="glass-input w-full text-slate-900 pl-7" placeholder="0.00" />
+
+                    <div>
+                        <label htmlFor="date" className="block text-sm font-medium text-slate-200 mb-1">Date</label>
+                        <input
+                            type="date"
+                            name="date"
+                            id="date"
+                            required
+                            defaultValue={new Date().toISOString().split('T')[0]}
+                            className="glass-input w-full text-slate-200"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label htmlFor="payer_id" className="block text-sm font-medium text-slate-200 mb-1">Paid By</label>
+                    <div className="relative">
+                        <select
+                            name="payer_id"
+                            id="payer_id"
+                            defaultValue={currentUserId}
+                            className="glass-input w-full appearance-none pr-10 cursor-pointer"
+                        >
+                            {members.map((m) => (
+                                <option key={m.user_id} className="bg-slate-900 text-slate-200" value={m.user_id}>
+                                    {m.profiles?.display_name || m.profiles?.email || 'Unknown'}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <label htmlFor="date" className="block text-sm font-medium text-slate-200">Date</label>
-                <input type="date" name="date" id="date" required defaultValue={new Date().toISOString().split('T')[0]} className="glass-input mt-1 w-full text-slate-900" />
-            </div>
-
-            <div>
-                <label htmlFor="payer_id" className="block text-sm font-medium text-slate-200">Paid By</label>
-                <select name="payer_id" id="payer_id" defaultValue={currentUserId} className="glass-input mt-1 w-full text-slate-900 appearance-none bg-white/50">
-                    {members.map((m) => (
-                        <option key={m.user_id} value={m.user_id}>
-                            {m.profiles?.display_name || m.profiles?.email || 'Unknown'}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Split Type Selector */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-200">Split Between</label>
-                <div className="flex gap-4 p-1 bg-white/10 rounded-xl">
+            <div className="pt-4 border-t border-white/5 space-y-3">
+                <label className="block text-sm font-medium text-slate-200">Split Method</label>
+                <div className="grid grid-cols-2 gap-3">
                     <button
                         type="button"
                         onClick={() => setSplitType('equal_all')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${splitType === 'equal_all'
-                            ? 'bg-brand-500 text-white shadow-lg'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                        className={`py-3 px-4 text-sm font-medium rounded-xl transition-all flex flex-col items-center gap-2 border ${splitType === 'equal_all'
+                            ? 'bg-brand-500/20 border-brand-500 text-white shadow-lg shadow-brand-500/10'
+                            : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10 hover:text-slate-200'
                             }`}
                     >
+                        <span className="text-lg">👥</span>
                         Everyone
                     </button>
                     <button
                         type="button"
                         onClick={() => setSplitType('equal_selected')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${splitType === 'equal_selected'
-                            ? 'bg-brand-500 text-white shadow-lg'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                        className={`py-3 px-4 text-sm font-medium rounded-xl transition-all flex flex-col items-center gap-2 border ${splitType === 'equal_selected'
+                            ? 'bg-brand-500/20 border-brand-500 text-white shadow-lg shadow-brand-500/10'
+                            : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10 hover:text-slate-200'
                             }`}
                     >
-                        Specific People
+                        <span className="text-lg">✨</span>
+                        Specific
                     </button>
                 </div>
-            </div>
 
-            {/* Hidden Inputs for Split Type & Selection (to pass to Server Action via FormData) */}
-            <input type="hidden" name="split_type" value={splitType} />
-            {splitType === 'equal_selected' && Array.from(selectedMembers).map(id => (
-                <input key={id} type="hidden" name="selected_users" value={id} />
-            ))}
+                {/* Hidden Inputs for Split Type & Selection */}
+                <input type="hidden" name="split_type" value={splitType} />
+                {splitType === 'equal_selected' && Array.from(selectedMembers).map(id => (
+                    <input key={id} type="hidden" name="selected_users" value={id} />
+                ))}
 
-            {/* Member Selection List */}
-            {splitType === 'equal_selected' && (
-                <div className="glass p-4 rounded-xl space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                    {members.map((m) => (
-                        <label key={m.user_id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
-                            <input
-                                type="checkbox"
-                                checked={selectedMembers.has(m.user_id)}
-                                onChange={() => toggleMember(m.user_id)}
-                                className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 bg-white/50"
-                            />
-                            <div className="flex flex-col">
-                                <span className={`text-sm font-medium ${selectedMembers.has(m.user_id) ? 'text-white' : 'text-slate-400'}`}>
+                {/* Member Selection List */}
+                {splitType === 'equal_selected' && (
+                    <div className="glass-card bg-black/20 p-3 mt-2 rounded-xl space-y-1 max-h-60 overflow-y-auto custom-scrollbar border border-white/5">
+                        <div className="flex items-center justify-between px-2 mb-2 pb-2 border-b border-white/5">
+                            <span className="text-xs font-medium text-slate-400">Select Members</span>
+                            <span className="text-xs text-brand-300">{selectedMembers.size} selected</span>
+                        </div>
+                        {members.map((m) => (
+                            <label key={m.user_id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group">
+                                <div className={`w-5 h-5 rounded flex items-center justify-center border transition-all ${selectedMembers.has(m.user_id) ? 'bg-brand-500 border-brand-500 text-white' : 'border-slate-600 bg-transparent group-hover:border-slate-500'}`}>
+                                    {selectedMembers.has(m.user_id) && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedMembers.has(m.user_id)}
+                                    onChange={() => toggleMember(m.user_id)}
+                                    className="hidden"
+                                />
+                                <span className={`text-sm font-medium transition-colors ${selectedMembers.has(m.user_id) ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`}>
                                     {m.profiles?.display_name || m.profiles?.email || 'Unknown'}
                                 </span>
-                            </div>
-                        </label>
-                    ))}
-                </div>
-            )}
+                            </label>
+                        ))}
+                    </div>
+                )}
 
-            <div className="text-xs text-brand-100 italic text-center mt-2">
-                {splitType === 'equal_all'
-                    ? `Splitting equally among all ${members.length} members.`
-                    : `Splitting equally among ${selectedMembers.size} selected members.`
-                }
+                <p className="text-xs text-center text-slate-400 min-h-[1.5em]">
+                    {splitType === 'equal_all'
+                        ? `Splitting equally ($${(members.length > 0 ? (Number((document.getElementById('amount') as HTMLInputElement)?.value || 0) / members.length).toFixed(2) : '0.00')}/person) among everyone.`
+                        : `Splitting equally among ${selectedMembers.size} people.`
+                    }
+                </p>
             </div>
 
-            <button type="submit" disabled={isPending || (splitType === 'equal_selected' && selectedMembers.size === 0)} className="btn-primary w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed">
-                {isPending ? 'Saving...' : 'Save Expense'}
-            </button>
-            <div className="text-center mt-4">
-                <a href={`/trips/${tripId}`} className="text-sm text-slate-300 hover:text-white hover:underline">Cancel</a>
+            <div className="pt-2">
+                <button
+                    type="submit"
+                    disabled={isPending || (splitType === 'equal_selected' && selectedMembers.size === 0)}
+                    className="btn-primary w-full py-3.5 text-base shadow-xl shadow-brand-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-400 hover:to-indigo-500"
+                >
+                    {isPending ? (
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Saving...
+                        </span>
+                    ) : 'Save Expense'}
+                </button>
+                <div className="text-center mt-4">
+                    <a href={`/trips/${tripId}`} className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Cancel</a>
+                </div>
             </div>
         </form>
     )

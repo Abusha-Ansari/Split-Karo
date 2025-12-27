@@ -27,7 +27,18 @@ export default async function Navbar() {
                 <div className="flex items-center space-x-4">
                     {user ? (
                         <>
-                            <span className="text-sm text-brand-100 font-medium hidden sm:block">{user.email}</span>
+                            <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-brand-100 hover:text-white transition-colors group">
+                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white border border-white/10 group-hover:border-brand-400 overflow-hidden">
+                                    {(user.user_metadata?.avatar_url) ? (
+                                        <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        (user.user_metadata?.display_name?.[0] || user.email?.[0] || 'U').toUpperCase()
+                                    )}
+                                </div>
+                                <span className="hidden sm:block">
+                                    {user.user_metadata?.display_name || user.email}
+                                </span>
+                            </Link>
                             <Link href="/dashboard" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
                                 Dashboard
                             </Link>
@@ -49,6 +60,6 @@ export default async function Navbar() {
                     )}
                 </div>
             </div>
-        </nav>
+        </nav >
     )
 }
