@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import InviteCard from '@/components/invite-card'
 
 export default async function TripDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -51,17 +52,17 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                     </svg>
                 </div>
                 <div className="relative z-10">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-sm">{trip.name}</h1>
-                            <p className="text-brand-100 text-lg max-w-2xl">{trip.description}</p>
+                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-sm leading-tight">{trip.name}</h1>
+                            <p className="text-brand-100 text-base md:text-lg max-w-2xl">{trip.description}</p>
                         </div>
-                        <div className="flex gap-3">
-                            <Link href={`/trips/${id}/expenses/new`} className="btn-primary">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            <Link href={`/trips/${id}/expenses/new`} className="btn-primary justify-center flex-1 sm:flex-initial">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                 Add Expense
                             </Link>
-                            <Link href={`/trips/${id}/settlements`} className="btn-secondary">
+                            <Link href={`/trips/${id}/settlements`} className="btn-secondary justify-center flex-1 sm:flex-initial text-center">
                                 Settle Up
                             </Link>
                         </div>
@@ -132,18 +133,8 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                 {/* Sidebar (Invite & Members) */}
                 <div className="space-y-6">
                     {/* Invite Card */}
-                    <div className="glass-card bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-brand-500/30">
-                        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-brand-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                            Invite Friends
-                        </h2>
-                        <div className="bg-black/30 p-3 rounded-xl mb-4 flex justify-between items-center border border-white/5">
-                            <code className="text-brand-300 font-mono tracking-wider">{trip.invite_code}</code>
-                        </div>
-                        <Link href={`/join?code=${trip.invite_code}`} className="text-brand-200 hover:text-white text-sm break-all hover:underline flex items-center gap-1">
-                            <span className="truncate">{`/join?code=${trip.invite_code}`}</span>
-                        </Link>
-                    </div>
+                    {/* Invite Card */}
+                    <InviteCard inviteCode={trip.invite_code} />
 
                     {/* Members Card */}
                     <div className="glass-card">
