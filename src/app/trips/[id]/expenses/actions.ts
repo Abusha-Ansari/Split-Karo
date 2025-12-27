@@ -46,11 +46,18 @@ export async function addExpense(tripId: string, formData: FormData) {
       share_amount: splitAmount
   }))
 
+  // Fetch trip currency
+  const { data: trip } = await supabase
+    .from('trips')
+    .select('currency')
+    .eq('id', tripId)
+    .single()
+
   const { error } = await supabase.rpc('add_expense', {
     p_trip_id: tripId,
     p_payer_id: payerId,
     p_amount: amount,
-    p_currency: 'USD', // Default
+    p_currency: trip?.currency,
     p_description: description,
     p_split_type: splitType,
     p_splits: splits,

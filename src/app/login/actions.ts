@@ -26,12 +26,18 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
-  const data = {
+    const displayName = formData.get('display_name') as string
+
+    if (!displayName) {
+        redirect('/signup?error=Display name is required')
+    }
+
+    const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     options: {
         data: {
-            display_name: (formData.get('display_name') as string) || (formData.get('email') as string)?.split('@')[0],
+            display_name: displayName,
         }
     }
   }

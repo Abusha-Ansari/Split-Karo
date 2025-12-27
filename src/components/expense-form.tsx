@@ -18,9 +18,10 @@ type ExpenseFormProps = {
     tripId: string
     members: Member[]
     currentUserId: string
+    currency: string
 }
 
-export default function ExpenseForm({ tripId, members, currentUserId }: ExpenseFormProps) {
+export default function ExpenseForm({ tripId, members, currentUserId, currency }: ExpenseFormProps) {
     const [splitType, setSplitType] = useState<'equal_all' | 'equal_selected'>('equal_all')
     const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set(members.map(m => m.user_id)))
     const [isPending, setIsPending] = useState(false)
@@ -101,7 +102,7 @@ export default function ExpenseForm({ tripId, members, currentUserId }: ExpenseF
                         <label htmlFor="amount" className="block text-sm font-medium text-slate-200 mb-1">Amount</label>
                         <div className="relative">
                             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                                <span className="text-gray-400 font-bold">$</span>
+                                <span className="text-gray-400 font-bold text-sm">{currency}</span>
                             </div>
                             <input
                                 type="number"

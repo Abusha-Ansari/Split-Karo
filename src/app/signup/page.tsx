@@ -38,6 +38,7 @@ export default async function SignupPage({
                                     id="display_name"
                                     name="display_name"
                                     type="text"
+                                    required
                                     className="glass-input w-full text-slate-900 placeholder:text-slate-500"
                                 />
                             </div>

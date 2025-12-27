@@ -29,6 +29,13 @@ export default async function AddExpensePage({ params }: { params: Promise<{ id:
         profiles: Array.isArray(m.profiles) ? m.profiles[0] : m.profiles
     })) || []
 
+    // Fetch trip currency
+    const { data: trip } = await supabase
+        .from('trips')
+        .select('currency')
+        .eq('id', id)
+        .single()
+
     return (
         <div className="container mx-auto p-4 py-12">
             <div className="max-w-md mx-auto glass-card">
@@ -37,6 +44,7 @@ export default async function AddExpensePage({ params }: { params: Promise<{ id:
                     tripId={id}
                     members={formattedMembers}
                     currentUserId={user.id}
+                    currency={trip?.currency || 'INR'}
                 />
             </div>
         </div>

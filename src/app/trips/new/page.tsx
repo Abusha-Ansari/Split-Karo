@@ -17,10 +17,10 @@ export default function NewTripPage() {
                     <div>
                         <label htmlFor="currency" className="block text-sm font-medium text-slate-200">Currency</label>
                         <select name="currency" id="currency" className="glass-input mt-1 w-full text-slate-900 appearance-none bg-white/50">
+                            <option value="INR">INR (₹)</option>
                             <option value="USD">USD ($)</option>
                             <option value="EUR">EUR (€)</option>
                             <option value="GBP">GBP (£)</option>
-                            <option value="INR">INR (₹)</option>
                         </select>
                     </div>
                     <button type="submit" className="btn-primary w-full mt-4">
