@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 export async function approveMember(tripId: string, memberId: string) {
     const supabase = await createClient()
@@ -70,4 +71,24 @@ export async function searchUsers(query: string) {
     const { data, error } = await supabase.rpc('search_profiles', { query })
     if (error) console.error(error)
     return data || []
+}
+export async function deleteTrip(tripId: string) {
+    const supabase = await createClient()
+    
+    // Verify leader
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    const { data: trip } = await supabase.from('trips').select('leader_id').eq('id', tripId).single()
+    if (!trip || trip.leader_id !== user.id) {
+        throw new Error('Only the trip leader can delete the trip')
+    }
+
+    // Delete trip (Cascading delete should handle members/expenses if configured in DB, 
+    // otherwise we might need manual cleanup. Assuming DB cascade or simple delete for now)
+    const { error } = await supabase.from('trips').delete().eq('id', tripId)
+
+    if (error) throw error
+    revalidatePath('/dashboard')
+    redirect('/dashboard')
 }

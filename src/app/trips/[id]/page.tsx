@@ -4,6 +4,7 @@ import Link from 'next/link'
 import InviteCard from '@/components/invite-card'
 import MemberManagement from '@/components/member-management'
 import InviteModal from '@/components/invite-modal'
+import DeleteTripButton from '@/components/delete-trip-button'
 
 export default async function TripDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -109,7 +110,7 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
     return (
         <div className="container mx-auto p-4 py-8">
             {/* Header Section */}
-            <div className="glass-card mb-8 relative overflow-hidden">
+            <div className="glass-card mb-8 relative overflow-hidden p-6 md:p-8">
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                     <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -118,7 +119,10 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                 <div className="relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-sm leading-tight">{trip.name}</h1>
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-sm leading-tight">{trip.name}</h1>
+                                {isLeader && <DeleteTripButton tripId={id} tripName={trip.name} />}
+                            </div>
                             <p className="text-brand-100 text-base md:text-lg max-w-2xl">{trip.description}</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -204,6 +208,7 @@ export default async function TripDetailsPage({ params }: { params: Promise<{ id
                         tripId={id}
                         members={members || []}
                         isAdmin={isLeader}
+                        currentUserId={user.id}
                     />
 
                     {isLeader && <InviteModal tripId={id} />}

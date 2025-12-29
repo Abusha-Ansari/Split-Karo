@@ -1,5 +1,6 @@
 import { login } from './actions'
 import Link from 'next/link'
+import PasswordInput from '@/components/password-input'
 
 export default async function LoginPage({
     searchParams,
@@ -51,13 +52,11 @@ export default async function LoginPage({
                                 Password
                             </label>
                             <div className="mt-1">
-                                <input
+                                <PasswordInput
                                     id="password"
                                     name="password"
-                                    type="password"
                                     autoComplete="current-password"
                                     required
-                                    className="glass-input w-full text-slate-900 placeholder:text-slate-500"
                                 />
                             </div>
                         </div>

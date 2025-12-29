@@ -14,7 +14,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-600/20 blur-[100px] animate-float" />
@@ -22,12 +22,12 @@ export default async function Home() {
         <div className="absolute -bottom-[10%] left-[20%] w-[60%] h-[60%] rounded-full bg-brand-900/20 blur-[100px] animate-float" style={{ animationDelay: '4s' }} />
       </div>
 
-      <div className="glass-card max-w-lg w-full text-center space-y-8 p-12">
+      <div className="glass-card max-w-lg w-full text-center space-y-6 md:space-y-8 p-6 md:p-12">
         <div className="space-y-4">
-          <h1 className="text-5xl font-extrabold text-white drop-shadow-lg tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg tracking-tight">
             Expense<span className="text-brand-300">Tracker</span>
           </h1>
-          <p className="text-xl text-slate-200">
+          <p className="text-lg sm:text-xl text-slate-200">
             Split bills, track expenses, and settle up with friends effortlessly.
           </p>
         </div>

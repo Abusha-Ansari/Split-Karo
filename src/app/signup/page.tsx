@@ -1,5 +1,6 @@
 import { signup } from '../login/actions'
 import VerificationModal from './verification-modal'
+import PasswordInput from '@/components/password-input'
 
 export default async function SignupPage({
     searchParams,
@@ -62,13 +63,11 @@ export default async function SignupPage({
                                 Password
                             </label>
                             <div className="mt-1">
-                                <input
+                                <PasswordInput
                                     id="password"
                                     name="password"
-                                    type="password"
                                     autoComplete="new-password"
                                     required
-                                    className="glass-input w-full text-slate-900 placeholder:text-slate-500"
                                 />
                             </div>
                         </div>
